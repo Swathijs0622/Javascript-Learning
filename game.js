@@ -11,19 +11,47 @@ let availableQuestions = [];
 
 let questions =[];
 
-//Fetch the questions from the local JSON file
-fetch("questions.json")
+// //Fetch the questions from the local JSON file
+// fetch("questions.json")
+//     .then(res => {
+//         return res.json();
+//     })
+//     .then(loadedQuestions => {
+//         console.log(loadedQuestions);
+//         questions = loadedQuestions;
+//         startGame();
+//     })
+//     .catch(err => {
+//         console.log(err);
+//     });
+
+
+//Generate API URL from open trivia database website (https://opentdb.com) and then click on API button on the right top of the menu bar
+fetch("https://opentdb.com/api.php?amount=10&category=9&difficulty=medium")
     .then(res => {
         return res.json();
     })
     .then(loadedQuestions => {
-        console.log(loadedQuestions);
-        questions = loadedQuestions;
+        console.log(loadedQuestions.results);
+        questions = loadedQuestions.results.map(loadedQuestion => {
+            const formattedQuestion = {
+                question: loadedQuestion.question
+            };
+            const answerChoices = [...loadedQuestion.incorrect_answers];
+            formattedQuestion.answer = Math.floor(Math.random() * 3) + 1;
+            answerChoices.splice(formattedQuestion.answer -1, 0, loadedQuestion.correct_answer);
+
+            answerChoices.forEach((choice, index) => {
+                formattedQuestion["choice" + (index+1)] = choice;
+            })
+            return formattedQuestion;
+        }); 
         startGame();
     })
-    .catch(er => {
+    .catch(err => {
         console.log(err);
     });
+
 
 //CONSTANTS
 
